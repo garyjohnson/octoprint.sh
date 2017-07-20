@@ -17,8 +17,9 @@ function main() {
 
 function check_os() {
   OS=$(uname -s)
-  if [[ ${OS} != "Darwin" ]] ; then
+  if [[ "${OS}" != "Darwin" ]] ; then
     error "octoprint.sh is currently only compatible with macOS."
+    exit 1
   fi
 }
 
