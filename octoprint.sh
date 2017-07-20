@@ -23,7 +23,10 @@ function check_os() {
   fi
 }
 
-function print_cmd_usage() { printf "${WHT}Usage: $0 -s ${CYN}<OCTOPRINT_URL>${WHT} -k ${CYN}<API_KEY>${WHT} -g ${CYN}<GCODE_FILE_PATH>${NC}\n" 1>&2; exit 1; }
+function print_cmd_usage() {
+  printf "${WHT}Usage: $0 -s ${CYN}<OCTOPRINT_URL>${WHT} -k ${CYN}<API_KEY>${WHT} -g ${CYN}<GCODE_FILE_PATH>${NC}\n"
+  exit 1
+}
 
 function parse_launch_args() {
   while getopts ":s:k:g:" o; do
@@ -50,7 +53,10 @@ function parse_launch_args() {
 }
 
 function show_notification() {
-  osascript -e 'display notification "'"${1}"'" with title "Simplify3D"'
+  QUOTE='"'
+  ESCAPED_QUOTE='\"'
+  MESSAGE=${1//$QUOTE/$ESCAPED_QUOTE}
+  osascript -e 'display notification "'"${MESSAGE}"'" with title "Simplify3D"'
 }
 
 function notify() {
@@ -75,6 +81,7 @@ function trash() {
 
 function upload_gcode_to_octoprint() {
   local GCODE_FILE_NAME=$( basename "${GCODE_FILE_PATH}" )
+  notify "Uploading file \"${GCODE_FILE_NAME}\""
 }
 
 main "$@"
