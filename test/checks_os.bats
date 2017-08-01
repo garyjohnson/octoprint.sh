@@ -3,33 +3,30 @@
 load test_helper
 
 setup() {
-  stub osascript
-  stub basename "echo test.gcode"
-  stub curl "exit 0"
+  shellmock_clean
+  shellmock_expect osascript --match "" --type partial
+  shellmock_expect curl --match "" --type partial
+  shellmock_expect basename --output "thing.gcode" --match "" --type partial
 }
 
 teardown() {
-  unstub osascript --quiet
-  unstub basename --quiet
-  unstub curl --quiet
+  shellmock_clean
 }
 
 @test "Succeeds if system is macOS" {
-  stub uname "-s : echo Darwin"
+  shellmock_expect uname --output "Darwin" --match "" --type partial
 
   run ./octoprint.sh -k "API_KEY" -g "/path/to/thing.gcode" -s "http://serverurl"
 
   assert_success
   refute_output --partial "octoprint.sh is currently only compatible with macOS."
-  unstub uname
 }
 
 @test "Fails if system is not macOS" {
-  stub uname "-s : echo Linux"
+  shellmock_expect uname --output "Linux" --match "" --type partial
 
   run ./octoprint.sh -k "API_KEY" -g "/path/to/thing.gcode" -s "http://serverurl"
 
   assert_failure
   assert_output --partial "octoprint.sh is currently only compatible with macOS."
-  unstub uname
 }
