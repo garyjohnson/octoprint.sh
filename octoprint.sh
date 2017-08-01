@@ -11,21 +11,29 @@ NC='\033[0m' # No Color
 
 function main() {
   parse_launch_args "$@"
-  check_os
+  assert_supported_os
   upload_gcode_to_octoprint
 }
 
-function check_os() {
+function upload_gcode_to_octoprint() {
+  local GCODE_FILE_NAME=$( basename "${GCODE_FILE_PATH}" )
+  SPACE=" "
+  local GCODE_FILE_NAME_ESCAPED=${GCODE_FILE_NAME/$SPACE/_}
+  notify "Uploading file \"${GCODE_FILE_NAME_ESCAPED}\""
+
+  #$(curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -X "DELETE" "${OCTOPRINT_SERVER_URL}/api/files/local/${GCODE_FILE_NAME_ESCAPED}")
+  echo "$(curl --help)"
+  #echo "curl --connect-timeout 15 -H \"Content-Type: multipart/form-data\" -H \"X-Api-Key: ${OCTOPRINT_API_KEY}\" -X \"DELETE\" \"${OCTOPRINT_SERVER_URL}/api/files/local/${GCODE_FILE_NAME_ESCAPED}\""
+
+  echo "TEST"
+}
+
+function assert_supported_os() {
   OS=$(uname -s)
   if [[ "${OS}" != "Darwin" ]] ; then
     error "octoprint.sh is currently only compatible with macOS."
     exit 1
   fi
-}
-
-function print_cmd_usage() {
-  printf "${WHT}Usage: $0 -s ${CYN}<OCTOPRINT_URL>${WHT} -k ${CYN}<API_KEY>${WHT} -g ${CYN}<GCODE_FILE_PATH>${NC}\n"
-  exit 1
 }
 
 function parse_launch_args() {
@@ -41,15 +49,20 @@ function parse_launch_args() {
         GCODE_FILE_PATH=${OPTARG}
         ;;
       *)
-        print_cmd_usage
+        print_cmd_usage_and_fail
         ;;
     esac
   done
   shift $((OPTIND-1))
 
   if [ -z "${OCTOPRINT_SERVER_URL}" ] || [ -z "${OCTOPRINT_API_KEY}" ] || [ -z "${GCODE_FILE_PATH}" ]; then
-    print_cmd_usage
+    print_cmd_usage_and_fail
   fi
+}
+
+function print_cmd_usage_and_fail() {
+  printf "${WHT}Usage: $0 -s ${CYN}<OCTOPRINT_URL>${WHT} -k ${CYN}<API_KEY>${WHT} -g ${CYN}<GCODE_FILE_PATH>${NC}\n"
+  exit 1
 }
 
 function show_notification() {
@@ -77,11 +90,6 @@ function success() {
 function trash() {
   printf "trash: ${1}\n"
   osascript -e 'tell app "Finder" to delete POSIX file "'"${1}"'"'
-}
-
-function upload_gcode_to_octoprint() {
-  local GCODE_FILE_NAME=$( basename "${GCODE_FILE_PATH}" )
-  notify "Uploading file \"${GCODE_FILE_NAME}\""
 }
 
 main "$@"

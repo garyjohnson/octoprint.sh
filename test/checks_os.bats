@@ -4,11 +4,14 @@ load test_helper
 
 setup() {
   stub osascript
+  stub basename "echo test.gcode"
+  stub curl "exit 0"
 }
 
 teardown() {
-  unstub osascript
-  unstub uname
+  unstub osascript --quiet
+  unstub basename --quiet
+  unstub curl --quiet
 }
 
 @test "Succeeds if system is macOS" {
@@ -18,6 +21,7 @@ teardown() {
 
   assert_success
   refute_output --partial "octoprint.sh is currently only compatible with macOS."
+  unstub uname
 }
 
 @test "Fails if system is not macOS" {
@@ -27,4 +31,5 @@ teardown() {
 
   assert_failure
   assert_output --partial "octoprint.sh is currently only compatible with macOS."
+  unstub uname
 }
