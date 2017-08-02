@@ -19,13 +19,10 @@ function upload_gcode_to_octoprint() {
   local GCODE_FILE_NAME=$( basename "${GCODE_FILE_PATH}" )
   SPACE=" "
   local GCODE_FILE_NAME_ESCAPED=${GCODE_FILE_NAME/$SPACE/_}
-  notify "Uploading file \"${GCODE_FILE_NAME_ESCAPED}\""
+  notify "Uploading file '${GCODE_FILE_NAME_ESCAPED}'"
 
-  #$(curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -X "DELETE" "${OCTOPRINT_SERVER_URL}/api/files/local/${GCODE_FILE_NAME_ESCAPED}")
-  echo "$(curl --help)"
-  #echo "curl --connect-timeout 15 -H \"Content-Type: multipart/form-data\" -H \"X-Api-Key: ${OCTOPRINT_API_KEY}\" -X \"DELETE\" \"${OCTOPRINT_SERVER_URL}/api/files/local/${GCODE_FILE_NAME_ESCAPED}\""
-
-  echo "TEST"
+  $(curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -X "DELETE" "${OCTOPRINT_SERVER_URL}/api/files/local/${GCODE_FILE_NAME_ESCAPED}") || true
+  $(curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -F "SELECT" -F "PRINT" -F "USER_DATA" -F "file=@${GCODE_FILE_NAME_ESCAPED}" "${OCTOPRINT_SERVER_URL}/api/files/local")
 }
 
 function assert_supported_os() {
