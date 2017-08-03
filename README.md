@@ -17,6 +17,8 @@ From Simplify3D, edit a process, go to **Scripts**, and enter the following unde
 
 ```<FULL_PATH_TO_OCTOPRINT> -s <OCTOPRINT_URL> -k <API_KEY> -g "[output_filepath]"```
 
+*(leave [output_filepath] in there. That's a Simplify3D macro to inject the gcode file you save)*
+
 Example:
 
 ```/usr/local/bin/octoprint -s http://octopi.local -k a2WEL2J32LHJ2LJ2LK2J -g "[output_filepath]"```
