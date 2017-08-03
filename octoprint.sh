@@ -23,6 +23,9 @@ function upload_gcode_to_octoprint() {
 
   $(curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -X "DELETE" "${OCTOPRINT_SERVER_URL}/api/files/local/${GCODE_FILE_NAME_ESCAPED}") || true
   $(curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -F "SELECT" -F "PRINT" -F "USER_DATA" -F "file=@${GCODE_FILE_NAME_ESCAPED}" "${OCTOPRINT_SERVER_URL}/api/files/local")
+  if [ $? -eq 0 ]; then
+    trash $GCODE_FILE_PATH
+  fi
 }
 
 function assert_supported_os() {

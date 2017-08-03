@@ -44,6 +44,33 @@ function assert_stub_called() {
   fi
 }
 
+function assert_stub_not_called() {
+  local expected_cmd="$1"
+  shift
+  local expected_args="$@"
+
+  shellmock_verify
+
+  was_called=0
+  with_args=0
+  for i in "${capture[@]}"; do
+    IFS=" " read -r command args <<< "${i}"
+    if [[ ${command} == "${expected_cmd}-stub" ]]; then
+      was_called=1
+    fi
+
+    if [[ $was_called -eq 1 ]] && [[ "${args}" == *"${expected_args}"* ]]; then
+      with_args=1
+    fi
+  done
+
+  local captures=$(join_by $'\n' "${capture[@]}")
+
+  if [[ $was_called -eq 1 ]] && [[ $with_args -eq 1 ]]; then
+    echo -e "\"${expected_cmd}\" was called with args \"${expected_args}\".\n\nCalls to stubbed commands:\n${captures}\n" | fail
+  fi
+}
+
 function test_name() {
   space=" "
   underscore="_"

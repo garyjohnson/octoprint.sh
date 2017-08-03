@@ -67,3 +67,24 @@ teardown() {
   assert_stub_called curl "-F file=@thing.gcode ${SERVER_URL}/api/files/local"
   assert_success
 }
+
+@test "${GROUP} Deletes file after upload" {
+  shellmock_stub basename --output "thing.gcode"
+  shellmock_stub curl
+
+  run ./octoprint.sh -g $GCODE_FILE -s $SERVER_URL -k $API_KEY
+
+  assert_stub_called osascript "tell app \"Finder\" to delete POSIX file \"${GCODE_FILE}\""
+  assert_success
+}
+
+@test "${GROUP} Does not delete file if upload failed" {
+  shellmock_stub basename --output "thing.gcode"
+  shellmock_expect curl --match "DELETE" --type partial
+  shellmock_expect curl --match "PRINT" --type partial --status 1
+
+  run ./octoprint.sh -g $GCODE_FILE -s $SERVER_URL -k $API_KEY
+
+  assert_stub_not_called osascript "delete"
+  assert_success
+}
