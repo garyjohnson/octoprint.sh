@@ -24,3 +24,9 @@ Example:
 ```/usr/local/bin/octoprint -s http://octopi.local -k a2WEL2J32LHJ2LJ2LK2J -g "[output_filepath]"```
 
 When you print, click **Save Toolpaths to Disk** and save the gcode file. The script will automatically upload the file and place it in the trash.
+
+# Testing
+
+This project uses git submodules for testing libraries (sorry in advance), so when you clone, use ```git clone --recursive [git_url]```
+
+To run tests, run ```./test.sh``` from root project dir.
