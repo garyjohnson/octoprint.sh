@@ -22,14 +22,17 @@ function upload_gcode_to_octoprint() {
   local GCODE_FILE_NAME_ESCAPED=${GCODE_FILE_NAME//$SPACE/_}
   local GCODE_FILE_PATH_ESCAPED="${GCODE_DIR}/${GCODE_FILE_NAME_ESCAPED}"
 
-  notify "Uploading file '${GCODE_FILE_NAME_ESCAPED}'"
 
   mv "${GCODE_DIR}/${GCODE_FILE_NAME}" "${GCODE_DIR}/${GCODE_FILE_NAME_ESCAPED}"
 
+  notify "Uploading '${GCODE_FILE_NAME_ESCAPED}'"
   curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -X "DELETE" "${OCTOPRINT_SERVER_URL}/api/files/local/${GCODE_FILE_NAME_ESCAPED}" || true
   curl --connect-timeout 15 -H "Content-Type: multipart/form-data" -H "X-Api-Key: ${OCTOPRINT_API_KEY}" -F "select=true" -F "print=true" -F "file=@${GCODE_FILE_PATH_ESCAPED}" "${OCTOPRINT_SERVER_URL}/api/files/local"
   if [ $? -eq 0 ]; then
+    notify "Now printing '${GCODE_FILE_NAME_ESCAPED}'"
     trash $GCODE_FILE_PATH_ESCAPED
+  else
+    notify "Failed to upload '${GCODE_FILE_PATH_ESCAPED}'"
   fi
 }
 
