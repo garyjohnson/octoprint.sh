@@ -43,3 +43,13 @@ function assert_stub_called() {
     echo -e "\"${expected_cmd}\" was called, but not with args \"${expected_args}\".\n\nCalls to stubbed commands:\n${captures}\n" | fail
   fi
 }
+
+function test_name() {
+  space=" "
+  underscore="_"
+
+  me=$(basename -s ".bats" "${BATS_TEST_FILENAME}")
+  me=${me//$underscore/$space}
+  me=$(echo "${me}" | awk '{print toupper($0)}')
+  echo "${me} |"
+}

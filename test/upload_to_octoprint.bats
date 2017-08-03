@@ -1,5 +1,7 @@
 #!/usr/bin/env bats
+
 load test_helper
+GROUP=$(test_name)
 
 SERVER_URL="http://my.server"
 API_KEY="MY_API_KEY"
@@ -15,7 +17,7 @@ teardown() {
   shellmock_clean
 }
 
-@test "Notifies that file is being uploaded" {
+@test "${GROUP} Notifies that file is being uploaded" {
   shellmock_stub basename --output "thing.gcode"
   shellmock_stub curl
 
@@ -25,7 +27,7 @@ teardown() {
   assert_success
 }
 
-@test "Changes spaces to underscores in file name" {
+@test "${GROUP} Changes spaces to underscores in file name" {
   shellmock_stub basename --output "my file.gcode"
   shellmock_stub curl
 
@@ -35,7 +37,7 @@ teardown() {
   assert_success
 }
 
-@test "Attempts to delete file with matching name already on server" {
+@test "${GROUP} Attempts to delete file with matching name already on server" {
   shellmock_stub basename --output "thing.gcode"
   shellmock_stub curl
 
@@ -45,7 +47,7 @@ teardown() {
   assert_success
 }
 
-@test "Ignores failure if deleting file fails" {
+@test "${GROUP} Ignores failure if deleting file fails" {
   shellmock_stub basename --output "thing.gcode"
   shellmock_expect curl --match "DELETE" --type partial --status 1
   shellmock_expect curl --match "PRINT" --type partial
@@ -56,7 +58,7 @@ teardown() {
   assert_success
 }
 
-@test "Uploads gcode file to server" {
+@test "${GROUP} Uploads gcode file to server" {
   shellmock_stub basename --output "thing.gcode"
   shellmock_stub curl
 

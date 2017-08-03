@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 
 load test_helper
+GROUP=$(test_name)
 
 setup() {
   shellmock_clean
@@ -13,7 +14,7 @@ teardown() {
   shellmock_clean
 }
 
-@test "Succeeds if system is macOS" {
+@test "${GROUP} Succeeds if system is macOS" {
   shellmock_expect uname --output "Darwin" --match "" --type partial
 
   run ./octoprint.sh -k "API_KEY" -g "/path/to/thing.gcode" -s "http://serverurl"
@@ -22,7 +23,7 @@ teardown() {
   refute_output --partial "octoprint.sh is currently only compatible with macOS."
 }
 
-@test "Fails if system is not macOS" {
+@test "${GROUP} Fails if system is not macOS" {
   shellmock_expect uname --output "Linux" --match "" --type partial
 
   run ./octoprint.sh -k "API_KEY" -g "/path/to/thing.gcode" -s "http://serverurl"
